@@ -72,6 +72,59 @@ export default function Slideshow({ images }) {
     }, 5000)
   }
 
+  const currentImage = shuffledImages.length > 0 ? shuffledImages[currentIndex] : null
+  const nextIndex = shuffledImages.length > 0 ? (currentIndex + 1) % shuffledImages.length : 0
+  const prevIndex = shuffledImages.length > 0 ? (currentIndex - 1 + shuffledImages.length) % shuffledImages.length : 0
+  const nextImage = shuffledImages.length > 0 ? shuffledImages[nextIndex] : null
+  const prevImage = shuffledImages.length > 0 ? shuffledImages[prevIndex] : null
+
+  // Préchargement des images adjacentes et suivantes
+  useEffect(() => {
+    if (shuffledImages.length === 0) return
+    
+    const links = []
+    
+    // Précharge l'image suivante
+    if (nextImage) {
+      const link1 = document.createElement('link')
+      link1.rel = 'preload'
+      link1.as = 'image'
+      link1.href = nextImage
+      document.head.appendChild(link1)
+      links.push(link1)
+    }
+    
+    // Précharge l'image précédente
+    if (prevImage) {
+      const link2 = document.createElement('link')
+      link2.rel = 'preload'
+      link2.as = 'image'
+      link2.href = prevImage
+      document.head.appendChild(link2)
+      links.push(link2)
+    }
+    
+    // Précharge aussi l'image après la suivante pour les clics rapides
+    const nextNextIndex = (nextIndex + 1) % shuffledImages.length
+    const nextNextImage = shuffledImages[nextNextIndex]
+    if (nextNextImage) {
+      const link3 = document.createElement('link')
+      link3.rel = 'preload'
+      link3.as = 'image'
+      link3.href = nextNextImage
+      document.head.appendChild(link3)
+      links.push(link3)
+    }
+    
+    return () => {
+      links.forEach(link => {
+        if (document.head.contains(link)) {
+          document.head.removeChild(link)
+        }
+      })
+    }
+  }, [nextImage, prevImage, shuffledImages, nextIndex])
+
   if (shuffledImages.length === 0) {
     return (
       <div className="h-full w-full flex items-center justify-center">
@@ -79,41 +132,6 @@ export default function Slideshow({ images }) {
       </div>
     )
   }
-
-  const currentImage = shuffledImages[currentIndex]
-  const nextIndex = (currentIndex + 1) % shuffledImages.length
-  const prevIndex = (currentIndex - 1 + shuffledImages.length) % shuffledImages.length
-  const nextImage = shuffledImages[nextIndex]
-  const prevImage = shuffledImages[prevIndex]
-
-  // Préchargement des images adjacentes
-  useEffect(() => {
-    if (nextImage) {
-      const link = document.createElement('link')
-      link.rel = 'preload'
-      link.as = 'image'
-      link.href = nextImage
-      document.head.appendChild(link)
-      
-      return () => {
-        document.head.removeChild(link)
-      }
-    }
-  }, [nextImage])
-
-  useEffect(() => {
-    if (prevImage) {
-      const link = document.createElement('link')
-      link.rel = 'preload'
-      link.as = 'image'
-      link.href = prevImage
-      document.head.appendChild(link)
-      
-      return () => {
-        document.head.removeChild(link)
-      }
-    }
-  }, [prevImage])
 
   return (
     <div className="relative h-full w-full">
@@ -135,31 +153,6 @@ export default function Slideshow({ images }) {
         <span className="sr-only">Image suivante</span>
       </button>
 
-      {/* Images cachées pour préchargement */}
-      {nextImage && (
-        <div className="hidden">
-          <Image
-            src={nextImage}
-            alt=""
-            width={1920}
-            height={1080}
-            loading="eager"
-            priority={false}
-          />
-        </div>
-      )}
-      {prevImage && (
-        <div className="hidden">
-          <Image
-            src={prevImage}
-            alt=""
-            width={1920}
-            height={1080}
-            loading="eager"
-            priority={false}
-          />
-        </div>
-      )}
 
       {/* Image affichée */}
       <div className="relative h-full w-full bg-white flex items-center justify-center px-6 lg:px-12 pb-20 lg:pb-0">
