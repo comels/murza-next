@@ -29,6 +29,37 @@ export default function Slideshow({ images }) {
     
     setShuffledImages(shuffled)
     setCurrentIndex(randomStartIndex)
+
+    // Précharge progressivement les images
+    // D'abord les 5 prochaines images (priorité)
+    const priorityImages = []
+    for (let i = 0; i < 5; i++) {
+      const idx = (randomStartIndex + i) % shuffled.length
+      priorityImages.push(shuffled[idx])
+    }
+    
+    priorityImages.forEach((imagePath) => {
+      const link = document.createElement('link')
+      link.rel = 'preload'
+      link.as = 'image'
+      link.href = imagePath
+      document.head.appendChild(link)
+    })
+
+    // Puis précharge le reste progressivement après un court délai
+    setTimeout(() => {
+      shuffled.forEach((imagePath, index) => {
+        if (!priorityImages.includes(imagePath)) {
+          setTimeout(() => {
+            const link = document.createElement('link')
+            link.rel = 'preload'
+            link.as = 'image'
+            link.href = imagePath
+            document.head.appendChild(link)
+          }, index * 100) // Espace les requêtes de 100ms
+        }
+      })
+    }, 500) // Attendre 500ms avant de commencer le préchargement du reste
   }, [images])
 
   // Auto-avance toutes les 5 secondes
@@ -155,7 +186,7 @@ export default function Slideshow({ images }) {
 
 
       {/* Image affichée */}
-      <div className="relative h-full w-full bg-white flex items-center justify-center px-6 lg:px-12 pb-20 lg:pb-0">
+      <div className="relative h-full w-full bg-white flex items-center justify-center px-6 lg:px-12 pb-16 lg:pb-0">
         <div className="relative h-[68%] w-full">
           <Image
             src={currentImage}
