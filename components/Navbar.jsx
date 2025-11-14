@@ -7,6 +7,12 @@ export default function Navbar() {
         {/* Liens à gauche */}
         <div className="flex gap-6">
           <Link 
+            href="/" 
+            className="hover:opacity-70 transition-opacity"
+          >
+            Accueil
+          </Link>
+          <Link 
             href="/contact" 
             className="hover:opacity-70 transition-opacity"
           >

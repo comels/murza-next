@@ -5,13 +5,14 @@ export default function AProposPage() {
     <div className="min-h-screen lg:h-screen w-full pt-24 pb-24 lg:pb-24">
       <div className="flex flex-col lg:flex-row max-w-[64rem] gap-8 lg:gap-2 mx-auto px-7 lg:px-10">
         {/* Image */}
-        <div className="w-[70vw] max-w-[400px] mx-auto lg:mx-0 lg:w-[45vw] lg:max-w-none">
+        <div className="w-[70vw] max-w-[400px] mx-auto lg:mx-0 lg:w-[45vw] lg:max-w-none select-none" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
           <Image
             src="/portrait.jpg"
             alt="À propos"
             width={520}
             height={800}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain pointer-events-none"
+            style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
             sizes="(max-width: 1024px) 80vw, 45vw"
           />
         </div>
