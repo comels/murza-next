@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 
 export default function Navbar() {
@@ -33,12 +34,18 @@ export default function Navbar() {
     >
       <div className="flex justify-between items-center px-6 py-4 lg:px-8">
         {/* Liens à gauche */}
-        <div className="flex gap-6">
+        <div className="flex gap-6 items-center">
           <Link 
             href="/" 
-            className="hover:opacity-70 transition-opacity"
+            className="hover:opacity-70 transition-opacity flex items-center"
           >
-            Accueil
+            <Image
+              src="/logonav.png"
+              alt="Accueil"
+              width={120}
+              height={40}
+              className="h-[1em] w-auto"
+            />
           </Link>
           <Link 
             href="/contact" 
